@@ -12,10 +12,15 @@
 <body>
   
 <div class="container">
-  Hello world
+  <input type="text" value="" onchange="convert(this.value)"></input>
+  <div id="result"></div>
 </div>
 
 <script>
+  function convert(value) {
+    var result = 60 / value;
+    document.getElementById("result").innerHTML = result;
+  }
 </script>
 
 </body>
