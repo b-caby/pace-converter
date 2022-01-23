@@ -11,16 +11,117 @@
 
 <body>
   
-<div class="container">
-  <input type="text" value="" onchange="convert(this.value)"></input>
+<!--<div class="container">
+  <input type="time" value="" onchange="convert(this.value)"></input>
   <div id="result"></div>
+</div>-->
+
+<input type="button" onclick="getPosition()">
+
+<div class="picker">
+  <span class="minutes" id="minutes">
+    <time id="start">8</time>
+    <time>9</time>
+    <time>10</time>
+    <time>0</time>
+    <time>1</time>
+    <time>2</time>
+    <time>3</time>
+    <time>4</time>
+    <time>5</time>
+    <time>6</time>
+    <time>7</time>
+    <time>8</time>
+    <time>9</time>
+    <time>10</time>
+    <time>0</time>
+    <time>1</time>
+    <time id="end">2</time>
+  </span>
 </div>
 
+<style>
+
+.picker {
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+.minutes::-webkit-scrollbar {
+    display: none;
+}
+
+.minutes {
+  display: grid;
+  grid-auto-rows: 9vmin;
+  align-items: center;
+  max-block-size: calc(9vmin * 5);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scroll-snap-type: y mandatory;
+  padding-inline-end: 1ch;
+  font-size: 7vmin;
+  font-weight: lighter;
+  color: hsl(0 0% 20%);
+}
+
+.minutes > * {
+  scroll-snap-align: center;
+}
+
+time {
+  color: rgb(0, 0, 0);
+}
+</style>
+
 <script>
-  function convert(value) {
-    var result = 60 / value;
-    document.getElementById("result").innerHTML = result;
+  var optionsIO = {
+    root: document.querySelector('#minutes'),
+    rootMargin: '0px',
+    threshold: 1.0
+  };
+
+  // 0 position = 64
+  // 8 position = 714
+  scrollToPosition(64);
+
+  function scrollToPosition(position) {
+    var element = document.getElementById("minutes");
+    element.scrollTo(0, position);
   }
+
+  function getPosition() {
+    var element = document.getElementById("minutes");
+    alert(element.scrollTop);
+  }
+
+  function scroll(entries, position) {
+    entries.forEach(entry => {
+      console.log(entry);
+      if (!entry.isIntersecting) {
+        return;
+      }
+      var element = document.getElementById("minutes");
+      scrollToPosition(position);
+    });
+  }
+
+  var scrollDownIO = new IntersectionObserver(entries => scroll(entries, 64), optionsIO);
+  scrollDownIO.observe(document.getElementById("end"));
+
+  var scrollUpIO = new IntersectionObserver(entries => scroll(entries, 714), optionsIO);
+  scrollUpIO.observe(document.getElementById("start"));
+
+  /*function convert(value) {
+    var timeArray = value.split(":");
+    var timeNumber = timeArray[0] * 1 + timeArray[1] / 60;
+
+    var pace = 60 / timeNumber;
+    var roundedPace = (Math.round(pace * 10) / 10).toFixed(1);
+
+    document.getElementById("result").innerHTML = roundedPace;
+  }*/
+
 </script>
 
 </body>
