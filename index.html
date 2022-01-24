@@ -10,17 +10,32 @@
 </head>
 
 <body>
-  
-<!--<div class="container">
-  <input type="time" value="" onchange="convert(this.value)"></input>
-  <div id="result"></div>
-</div>-->
 
-<input type="button" onclick="getPosition()">
+<input type="button" title="getMinutePosition" onclick="getPosition('minutes')">
+<input type="button" title="getMinuteLength" onclick="getLength('minutes')">
+<input type="button" title="getSecondPosition" onclick="getPosition('seconds')">
+<input type="button" title="getSecondLength" onclick="getLength('seconds')">
 
-<div class="picker">
-  <span class="minutes" id="minutes">
-    <time id="start">8</time>
+<div class="container">
+  <span id="minutes" class="time_container minutes">
+    <time id="minutes_start">9</time>
+    <time>10</time>
+    <time>0</time>
+    <time>1</time>
+    <time>2</time>
+    <time>3</time>
+    <time>4</time>
+    <time>5</time>
+    <time>6</time>
+    <time>7</time>
+    <time>8</time>
+    <time>9</time>
+    <time>10</time>
+    <time>0</time>
+    <time id="minutes_end">1</time>
+  </span>
+  <span id="seconds" class="time_container seconds">
+    <time id="seconds_start">8</time>
     <time>9</time>
     <time>10</time>
     <time>0</time>
@@ -36,92 +51,105 @@
     <time>10</time>
     <time>0</time>
     <time>1</time>
-    <time id="end">2</time>
+    <time id="seconds_end">2</time>
   </span>
 </div>
 
 <style>
 
-.picker {
+.container {
   display: grid;
   grid-template-columns: auto auto;
 }
 
-.minutes::-webkit-scrollbar {
+.time_container::-webkit-scrollbar {
     display: none;
 }
 
-.minutes {
+.time_container {
   display: grid;
-  grid-auto-rows: 9vmin;
   align-items: center;
-  max-block-size: calc(9vmin * 5);
   overflow-y: auto;
   overscroll-behavior-y: contain;
   scroll-snap-type: y mandatory;
   padding-inline-end: 1ch;
-  font-size: 7vmin;
   font-weight: lighter;
   color: hsl(0 0% 20%);
 }
 
-.minutes > * {
-  scroll-snap-align: center;
+.minutes {
+  grid-auto-rows: 100px;
+  max-block-size: calc(100px * 3);
+  font-size: 80px;
+  justify-content: end;
 }
 
-time {
+.seconds {
+  grid-auto-rows: 60px;
+  max-block-size: calc(60px * 5);
+  font-size: 40px;
+}
+
+.time_container > * {
+  scroll-snap-align: center;
   color: rgb(0, 0, 0);
 }
 </style>
 
 <script>
-  var optionsIO = {
-    root: document.querySelector('#minutes'),
-    rootMargin: '0px',
+  var minutesContainerId = "minutes";
+  var secondsContainerId = "seconds";
+  var positionMinutesUp = 100;
+  var positionMinutesDown = 1100;
+  var positionSecondsUp = 60;
+  var positionSecondsDown = 660;
+  var optionsMinutes = {
+    root: document.getElementById(minutesContainerId),
+    rootMargin: "0px",
     threshold: 1.0
   };
+  var optionsSeconds = {
+    root: document.getElementById(secondsContainerId),
+    rootMargin: "0px",
+    threshold: 1.0
+  }
+  var scrollDownMinutes = new IntersectionObserver(entries => scroll(entries, minutesContainerId, positionMinutesUp), optionsMinutes);
+  var scrollUpMinutes = new IntersectionObserver(entries => scroll(entries, minutesContainerId, positionMinutesDown), optionsMinutes);
+  var scrollDownSeconds = new IntersectionObserver(entries => scroll(entries, secondsContainerId, positionSecondsDown), optionsSeconds);
+  var scrollUpSeconds = new IntersectionObserver(entries => scroll(entries, secondsContainerId, positionSecondsUp), optionsSeconds);
 
-  // 0 position = 64
-  // 8 position = 714
-  scrollToPosition(64);
+  scrollToPosition(minutesContainerId, positionMinutesUp);
+  scrollToPosition(secondsContainerId, positionSecondsUp);
 
-  function scrollToPosition(position) {
-    var element = document.getElementById("minutes");
+  function scrollToPosition(containerId, position) {
+    var element = document.getElementById(containerId);
     element.scrollTo(0, position);
   }
 
-  function getPosition() {
-    var element = document.getElementById("minutes");
+  function getPosition(containerId) {
+    var element = document.getElementById(containerId);
     alert(element.scrollTop);
   }
 
-  function scroll(entries, position) {
+  function getLength(containerId) {
+    var element = document.getElementById(containerId);
+    alert(element.scrollHeight);
+  }
+
+  function scroll(entries, containerId, position) {
     entries.forEach(entry => {
-      console.log(entry);
       if (!entry.isIntersecting) {
         return;
       }
-      var element = document.getElementById("minutes");
-      scrollToPosition(position);
+
+      scrollToPosition(containerId, position);
     });
   }
 
-  var scrollDownIO = new IntersectionObserver(entries => scroll(entries, 64), optionsIO);
-  scrollDownIO.observe(document.getElementById("end"));
-
-  var scrollUpIO = new IntersectionObserver(entries => scroll(entries, 714), optionsIO);
-  scrollUpIO.observe(document.getElementById("start"));
-
-  /*function convert(value) {
-    var timeArray = value.split(":");
-    var timeNumber = timeArray[0] * 1 + timeArray[1] / 60;
-
-    var pace = 60 / timeNumber;
-    var roundedPace = (Math.round(pace * 10) / 10).toFixed(1);
-
-    document.getElementById("result").innerHTML = roundedPace;
-  }*/
-
+  scrollDownMinutes.observe(document.getElementById("minutes_end"));
+  scrollUpMinutes.observe(document.getElementById("minutes_start"));
+  scrollDownSeconds.observe(document.getElementById("seconds_end"));
+  scrollUpSeconds.observe(document.getElementById("seconds_end"));
 </script>
 
 </body>
